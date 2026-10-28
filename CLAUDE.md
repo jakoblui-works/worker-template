@@ -16,3 +16,4 @@ The script needs Postgres and Redis reachable with `DATABASE__*` and `REDIS__*` 
 - Conditional files and folders use a name that renders empty when off (`app/{% if use_s3 %}storage{% endif %}/`).
 - Releases are git tags (`v0.1.0`); `copier update` moves between them. Tag after merging, not on a branch.
 - Changes the generated repos should get go here first, then reach them through `copier update`.
+- `README.md` and `CLAUDE.md` are `_skip_if_exists`: rendered for a new repo, never touched by updates. A change to them only reaches new repos; tell existing ones by hand if it matters.

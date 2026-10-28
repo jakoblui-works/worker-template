@@ -42,7 +42,7 @@ jobs:
             -e S3__BUCKET=x \
 {%- endif %}
             ghcr.io/jakoblui-works/{{ service_name }}:{% raw %}${{ github.sha }}{% endraw %} \
-            python -c 'import app.core.broker, app.health.tasks'
+            python -u -c 'import importlib, pkgutil, app; [print(m.name) or importlib.import_module(m.name) for m in pkgutil.walk_packages(app.__path__, "app.")]'
       - name: Push
         uses: docker/build-push-action@v7
         with:

@@ -60,11 +60,35 @@ uv run pytest
 step "Docker image"
 docker build -t "$image" .
 
-step "Worker answers a ping"
 env_args=(-e REDIS__HOST -e REDIS__PORT -e REDIS__PASSWORD -e DATABASE__PASSWORD=dummy)
 if [[ $use_s3 == true ]]; then
     env_args+=(-e S3__ENDPOINT_URL -e S3__ACCESS_KEY_ID -e S3__SECRET_ACCESS_KEY -e S3__BUCKET)
 fi
+
+# The image has no dev dependencies, so a module that imports one (e.g. type stubs) fails only here.
+# taskiq's --fs-discover skips task modules that fail to import, so the worker would still start.
+step "Every app module imports in the image"
+import_check='
+import importlib, pkgutil, sys, traceback
+import app
+names = [m.name for m in pkgutil.walk_packages(app.__path__, "app.", onerror=lambda name: None)]
+failed = []
+for name in names:
+    try:
+        importlib.import_module(name)
+    except Exception:
+        failed.append(name)
+        print(f"FAILED to import {name}:", file=sys.stderr)
+        traceback.print_exc()
+if not names:
+    sys.exit("No modules found under app")
+if failed:
+    sys.exit(f"{len(failed)} of {len(names)} app modules failed to import: " + ", ".join(failed))
+print(f"All {len(names)} app modules import")
+'
+docker run --rm "${env_args[@]}" "$image" python -c "$import_check"
+
+step "Worker answers a ping"
 docker run -d --name "$container" --network host "${env_args[@]}" "$image" >/dev/null
 
 # Retry until the worker is up: a ping sent before it has joined the stream may go unanswered.

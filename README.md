@@ -24,7 +24,7 @@ The new repo still needs:
 ```sh
 copier update --trust
 ```
-Run it in the generated repo with everything committed. Copier applies the template's changes since the version in `.copier-answers.yml` and keeps your own edits; conflicts show up as in a git merge.
+Run it in the generated repo with everything committed. Copier applies the template's changes since the version in `.copier-answers.yml` and keeps your own edits; conflicts show up as in a git merge. `README.md` and `CLAUDE.md` are written once and then left alone, since they become the repo's own.
 
 ## Layout
 - `copier.yml`: the questions.

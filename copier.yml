@@ -1,6 +1,11 @@
 _min_copier_version: "9.19"
 _subdirectory: template
 
+# Rendered once, then the repo's own: `copier update` leaves them alone.
+_skip_if_exists:
+  - README.md
+  - CLAUDE.md
+
 # Lock the dependencies so the generated CI's `uv sync --locked` works.
 # Tasks need `--trust`: copier copy --trust gh:jakoblui-works/worker-template <dir>
 _tasks:
