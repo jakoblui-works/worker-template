@@ -1,0 +1,36 @@
+_min_copier_version: "9.19"
+_subdirectory: template
+
+# Lock the dependencies so the generated CI's `uv sync --locked` works.
+# Tasks need `--trust`: copier copy --trust gh:jakoblui-works/worker-template <dir>
+_tasks:
+  - uv lock
+
+service_name:
+  type: str
+  help: Repo, image and app name (e.g. cv-service)
+  validator: >-
+    {% if not (service_name | regex_search('^[a-z][a-z0-9-]*$')) %}
+    Lowercase letters, digits and hyphens, starting with a letter
+    {% endif %}
+
+domain:
+  type: str
+  help: Schema, queue, result prefix and task name prefix (e.g. cv)
+  default: "{{ service_name | regex_replace('-service$', '') | replace('-', '_') }}"
+  validator: >-
+    {% if not (domain | regex_search('^[a-z][a-z0-9_]*$')) %}
+    Lowercase letters, digits and underscores, starting with a letter
+    {% elif domain == 'public' or domain.startswith('pg_') %}
+    Postgres keeps public and pg_* for itself; the database is shared, so pick the service's own name
+    {% endif %}
+
+description:
+  type: str
+  help: One line for pyproject.toml and the README
+  default: "Taskiq worker for the {{ domain }} domain"
+
+use_s3:
+  type: bool
+  help: Does the worker talk to S3 (Garage)?
+  default: false
