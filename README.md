@@ -16,9 +16,10 @@ Questions:
 - `use_s3`: adds S3 settings, an `aioboto3` client and the CI env.
 
 The new repo still needs:
-- the `DEPLOY_REPO_DISPATCH_TOKEN` secret, which `deploy.yml` uses to trigger the infra deploy;
+- access to the `DEPLOY_REPO_DISPATCH_TOKEN` org secret, which `deploy.yml` uses to trigger the infra deploy;
+- a place on the `DEPLOY_STATUS_TOKEN` token's repository list, or infra can't report the deploy on its commits and they stay `pending`;
 - its GHCR package made public after the first push (new org packages start private);
-- its infra side (compose service, env, deploy steps) and its place in the site-web x-ray.
+- its infra side (compose service, env, deploy steps) and its place in the site-web x-ray. The full list is in `platform-docs/new-service.md`.
 
 ## Update a worker
 ```sh
