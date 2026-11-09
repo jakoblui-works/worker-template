@@ -10,7 +10,7 @@ scripts/test-template.sh false   # render with use_s3=false and check it; `true`
 The script needs Postgres and Redis reachable with `DATABASE__*` and `REDIS__*` in the environment (locally, the api repo's `compose.dev.yml` stack and its `.env`).
 
 ## Rules
-- `.jinja` only on files that use template variables, with one exception: the generated `.gitignore` is `template/.gitignore.jinja`, because as a plain `.gitignore` git would apply it to the template itself (its `.env.*` line hid `.env.example.jinja` from every render).
+- `.jinja` only on files that use template variables, with one exception: the generated `.gitignore` is `template/.gitignore.jinja`, because as a plain `.gitignore` git would apply it to the template itself.
 - In templated GitHub workflows, wrap `${{ … }}` in `{% raw %}…{% endraw %}`.
 - `scripts/test-template.sh` renders with `--vcs-ref HEAD`: without it, Copier renders the latest tag and ignores the working tree.
 - Conditional files and folders use a name that renders empty when off (`app/{% if use_s3 %}storage{% endif %}/`).
